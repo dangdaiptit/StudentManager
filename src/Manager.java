@@ -1,5 +1,15 @@
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+
 
 public class Manager {
 
@@ -10,7 +20,9 @@ public class Manager {
         System.out.println("2. Find and Sort");
         System.out.println("3. Update/Delete");
         System.out.println("4. Report");
-        System.out.println("5. Exit");
+        System.out.println("5. Update/Export Excel");
+        System.out.println("6. Display List Student");
+        System.out.println("7. Exit");
         System.out.print("Enter your choice: ");
     }
 
@@ -40,10 +52,6 @@ public class Manager {
             if (!checkIdExist) {
                 System.out.print("Enter name student: ");
                 name = Validation.checkInputString();
-//                if (!Validation.checkIdExist(ls, id, name)) {
-//                    System.err.print("Id has exist student. Please re-input.");
-//                    continue;
-//                }
             }
 
             System.out.print("Enter semester: ");
@@ -100,13 +108,12 @@ public class Manager {
             System.err.println("List Empty.");
             return;
         }
-        System.out.println("Enter ID to search: ");
+        System.out.print("Enter ID to search: ");
         String id = Validation.checkInputString();
         ArrayList<Student> listStudentUpdate = getListStudentById(ls, id);
 
         if (listStudentUpdate.isEmpty()) {
             System.err.println("Not found student.");
-            return;
         } else {
             Student student = getStudentByListFound(listStudentUpdate);
             System.out.print("Do you want Update (U) or Delete (D) student: ");
@@ -132,14 +139,12 @@ public class Manager {
                     student.setStudentName(name);
                     student.setSemester(semester);
                     student.setCourseName(course);
-                    System.err.println("Update success.");
+                    System.out.println("Update success.");
                 }
-                return;
             } else {
                 ls.remove(student);
                 count--;
-                System.err.println("Delete success.");
-                return;
+                System.out.println("Delete success.");
             }
         }
     }
@@ -171,6 +176,110 @@ public class Manager {
         return getListStudentById;
     }
 
+    //get list Student from file Excel
+    public static void exportDataExcelToArray(ArrayList<Student> ls) throws IOException {
+        File file = new File("C:\\Users\\dangd\\Downloads\\test.xlsx");
+        FileInputStream inputStream = new FileInputStream(file);
+        XSSFWorkbook wb = new XSSFWorkbook(inputStream);
+        XSSFSheet sheet = wb.getSheetAt(0);
+
+
+        //get All rows in file excel
+        int rowCount = sheet.getLastRowNum() - sheet.getFirstRowNum() + 1;
+        boolean check = false;
+        for (int i = 0; i < rowCount; i++) {
+            int cellCount = sheet.getRow(i).getLastCellNum();
+            String id = null, name = null, semester = null, course = null;
+            for (int j = 0; j < cellCount; j++) {
+                if (j == 0) {
+                    id = sheet.getRow(i).getCell(j).getStringCellValue();
+                }
+                if (j == 1) {
+                    name = sheet.getRow(i).getCell(j).getStringCellValue();
+                }
+                if (j == 2) {
+                    semester = sheet.getRow(i).getCell(j).getStringCellValue();
+                }
+                if (j == 3) {
+                    course = sheet.getRow(i).getCell(j).getStringCellValue();
+                }
+            }
+            if (Validation.checkStudentExist(ls, id, name, semester, course)) {
+                ls.add(new Student(id, name, semester, course));
+                check = true;
+            }
+        }
+        if (check) {
+            System.out.println("Extract file Excel success!");
+        }
+        wb.close();
+    }
+
+    //delete All Rows In File Excel
+    public static void deleteAllDataExcel() throws IOException {
+        FileInputStream fileInputStream = new FileInputStream("C:\\Users\\dangd\\Downloads\\test.xlsx");
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        XSSFSheet sheet = workbook.getSheetAt(1);
+
+        int rowCount = sheet.getLastRowNum()+1;
+        System.out.println(rowCount);
+        for (int i = 0; i < rowCount; i++) {
+            if (sheet.getRow(i)!= null){
+                sheet.removeRow(sheet.getRow(i));
+            }
+        }
+        //Save file Excel
+        FileOutputStream outFile = new FileOutputStream("C:\\Users\\dangd\\Downloads\\test.xlsx");
+        workbook.write(outFile);
+        workbook.close();
+        System.out.println("Delete data success!");
+
+    }
+
+    //Extract Data from listStudent to Excel
+    public static void exportDataArrayToExcel(ArrayList<Student> ls) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream("C:\\Users\\dangd\\Downloads\\test.xlsx");
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        XSSFSheet sheet = workbook.getSheetAt(1);
+
+        for (int i = 0; i < ls.size(); i++) {
+            int totalCell = 4;
+            XSSFRow row = sheet.createRow(i);
+            for (int j = 0; j < totalCell; j++) {
+                if (j == 0) {
+                    row.createCell(j).setCellValue(ls.get(i).getId());
+                }
+                if (j == 1) {
+                    row.createCell(j).setCellValue(ls.get(i).getStudentName());
+                }
+                if (j == 2) {
+                    row.createCell(j).setCellValue(ls.get(i).getSemester());
+                }
+                if (j == 3) {
+                    row.createCell(j).setCellValue(ls.get(i).getCourseName());
+                }
+
+            }
+        }
+
+        //Save file Excel
+        System.out.println("Extract to Excel success!");
+        FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\dangd\\Downloads\\test.xlsx");
+        workbook.write(fileOutputStream);
+        workbook.close();
+    }
+
+
+    //menu manager excel
+    public static void menuManagerExcel(ArrayList<Student>ls) throws IOException {
+        System.out.print("You want to Update (u/U) or Export (e/E): ");
+        if (Validation.checkInputUE()){
+            exportDataExcelToArray(ls);
+        }else {
+            exportDataArrayToExcel(ls);
+        }
+    }
+
     //print Report
     public static void report(ArrayList<Student> ls) {
         if (ls.isEmpty()) {
@@ -178,32 +287,43 @@ public class Manager {
             return;
         }
         ArrayList<Report> lr = new ArrayList<>();
-        for (int i = 0; i < ls.size(); i++) {
+        for (Student student : ls) {
             int total = 0;
-            for (Student student :
-                    ls) {
-                String id = student.getId();
-                String studentName = student.getStudentName();
-                String courseName = student.getCourseName();
-                for (Student studentCountTotal :
-                        ls) {
-                    if (id.equalsIgnoreCase(studentCountTotal.getId())
-                            && studentName.equalsIgnoreCase(studentCountTotal.getStudentName())) {
-                        total++;
-                    }
+            String id = student.getId();
+            String studentName = student.getStudentName();
+            String courseName = student.getCourseName();
+            for (Student studentCountTotal : ls) {
+                if (id.equalsIgnoreCase(studentCountTotal.getId())
+                        && courseName.equalsIgnoreCase(studentCountTotal.getCourseName())) {
+                    total++;
                 }
-                if (Validation.checkReportExist(lr, studentName, courseName, total)) {
-                    lr.add(new Report(student.getStudentName(), studentName, total));
-                }
+            }
+            if (Validation.checkReportExist(lr, studentName, courseName, total)) {
+                lr.add(new Report(student.getStudentName(), student.getCourseName(), total));
             }
         }
 
         //print report
-        for (int i = 0; i < lr.size(); i++) {
-            System.out.printf("%-15s|%-10s|%-5d\n", lr.get(i).getStudentName(),
-                    lr.get(i).getCourseName(), lr.get(i).getTotalCourse());
-        }
 
+        lr.sort(Comparator.comparing(Report::getStudentName));
+//        lr.sort(Comparator.comparing(p->p.getStudentName())); //java 8, lambda
+        System.out.printf("%-5s%-18s%-10s%-11s\n", "STT", "StudentName", "Course", "TotalCourse");
+        int count = 0;
+        for (Report report : lr) {
+            count++;
+            System.out.printf("%-5d%-18s%-10s%11d\n", count, report.getStudentName(),
+                    report.getCourseName(), report.getTotalCourse());
+        }
+        System.out.println();
+
+    }
+
+    //print list student
+    public static void listStudent(ArrayList<Student>ls){
+        System.out.println("=====List Student Updated/Delete====");
+        for (Student student : ls) {
+            student.printStudent();
+        }
     }
 
 

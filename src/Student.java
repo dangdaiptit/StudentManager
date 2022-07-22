@@ -13,7 +13,6 @@ public class Student implements Comparable<Student> {
         this.studentName = studentName;
         this.semester = semester;
         this.courseName = courseName;
-
     }
 
     public String getId() {
@@ -49,7 +48,7 @@ public class Student implements Comparable<Student> {
     }
 
     public void printStudent(){
-        System.out.printf("%-10s%-15s%-15s%-15s\n",id, studentName, semester, courseName);
+        System.out.printf("%-10s%-20s%-15s%-15s\n",id, studentName, semester, courseName);
     }
 
     @Override

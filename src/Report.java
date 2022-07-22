@@ -35,4 +35,5 @@ public class Report {
     public void setTotalCourse(int totalCourse) {
         this.totalCourse = totalCourse;
     }
+
 }

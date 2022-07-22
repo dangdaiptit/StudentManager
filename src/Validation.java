@@ -1,5 +1,3 @@
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -75,6 +73,23 @@ public class Validation {
         }
     }
 
+    public static boolean checkInputUE(){
+        while (true){
+            String result = checkInputString();
+
+            if (result.equalsIgnoreCase("U")){
+                return true;
+            }
+            if (result.equalsIgnoreCase("E")){
+                return false;
+            }
+
+            System.err.println("Please input u/U or e/E!");
+            System.out.print("Enter again: ");
+        }
+    }
+
+
     //check user input course
     public static String checkInputCourse() {
         while (true) {
@@ -113,7 +128,7 @@ public class Validation {
         return true;
     }
 
-    //check student exist
+    //check student exist, if exist return false, if not exist return true
     public static boolean checkStudentExist(ArrayList<Student> ls, String id, String studentName,
                                             String semester, String courseName) {
         for (Student student : ls) {
@@ -149,15 +164,11 @@ public class Validation {
             return false;
         }
         return true;
-//        return !id.equalsIgnoreCase(student.getId())
-//                || !studentName.equalsIgnoreCase(student.getStudentName())
-//                || !semester.equalsIgnoreCase(student.getSemester())
-//                || !courseName.equalsIgnoreCase(student.getCourseName());
     }
 
     public static boolean checkReportExist(ArrayList<Report> lr, String name, String course, int total) {
         for (Report report : lr) {
-            if (name.equalsIgnoreCase(report.getCourseName())
+            if (name.equalsIgnoreCase(report.getStudentName())
                     && course.equalsIgnoreCase(report.getCourseName())
                     && total == report.getTotalCourse()) {
                 return false;

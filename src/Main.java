@@ -9,6 +9,7 @@ public class Main {
         ls.add(new Student("SV1", "Vu Dang Dai", "HKII", ".net"));
         ls.add(new Student("SV2", "Nguyen Duc Khoi", "HKI", ".net"));
         ls.add(new Student("SV3", "Ngo Tuan Anh", "HKI", "c/c++"));
+        ls.add(new Student("SV4", "Nguyen Van Toan", "HKI", "c/c++"));
         int count = ls.size();
         while (true) {
             Manager.menu();

@@ -1,4 +1,6 @@
-public class Student implements Comparable<Student> {
+import java.util.Comparator;
+
+public class Student implements Comparator<Student> {
     private String id;
     private String studentName;
     private String semester;
@@ -51,8 +53,13 @@ public class Student implements Comparable<Student> {
         System.out.printf("%-10s%-20s%-15s%-15s\n",id, studentName, semester, courseName);
     }
 
+//    @Override
+//    public int compareTo(Student o) {
+//        return o.studentName.compareTo(this.studentName);
+//    }
+
     @Override
-    public int compareTo(Student o) {
-        return o.studentName.compareTo(this.studentName);
+    public int compare(Student o1, Student o2) {
+        return o1.getStudentName().compareTo(o2.getStudentName());
     }
 }

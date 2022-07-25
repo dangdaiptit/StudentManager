@@ -80,7 +80,7 @@ public class Manager {
         if (listStudentFindByName.isEmpty()) {
             System.err.println("Not exist.");
         } else {
-            Collections.sort(listStudentFindByName);
+            Collections.sort(listStudentFindByName, new Student());
             System.out.printf("%-10s%-15s%-15s%-15s\n", "ID", "StudentName", "Semester", "CourseName");
             for (Student student : listStudentFindByName) {
                 student.printStudent();
@@ -95,7 +95,7 @@ public class Manager {
         String name = Validation.checkInputString();
         for (Student student : ls) {
             //check student have in name by contains? return true if yes, return false if not
-            if (student.getStudentName().contains(name)) {
+            if (student.getStudentName().toLowerCase().contains(name.toLowerCase())) {
                 listStudentFindByName.add(student);
             }
         }
